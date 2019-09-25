@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="../../favicon.ico">
+
+  <title>TripSifter – intuitive search for Airbnb listings</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="../static/css/starter-template.css" rel="stylesheet">
+
+  <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+  <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+  <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+
+  <!-- <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Project name</a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div><!--/.nav-collapse
+    </div>
+  </div> -->
+
+
+<br><br>
+
+  <div class="container">
+
+   <div class="starter-template">
+       <h2>What do you want in an Airbnb?</h2>
+      
+   </div>
+
+   <div class = "container">
+
+     <form action="/output" method="GET">
+       <div class="form-group">
+          <label for="user_input">Enter your preferences: </label>
+          <textarea input type="text" class="form-control" rows="5" name="user_input" placeholder="e.g. A cute spot near the coolest coffee shops"></textarea>
+       </div>
+
+       
+
+      <br>
+      <h4>Additional Filters</h4>
+      <label for="user_input_room_type">Room type: </label> <br>
+      <input type="checkbox" name="user_input_room_type_entire" value="user_input_room_type_entire"> Entire Home / Apartment<br>
+      <input type="checkbox" name="user_input_room_type_private" value="user_input_room_type_private"> Private Room<br>
+      <input type="checkbox" name="user_input_room_type_shared" value="user_input_room_type_shared"> Shared Room<br>
+      <br>
+
+ 
+      <label for="price_range">Price Range: </label> <br>
+      <label for="user_input_min_price">Minimum:</label> 
+      <input type="number" id="user_input_min_price" name='user_input_min_price'>
+      <label for="user_input_max_price">Maximum:</label> 
+      <input type="number" id="user_input_max_price" name='user_input_max_price'>
+      <br><br>
+
+      <label for="n_beds">Number of Beds: </label> 
+      <input type="number" id="user_input_n_beds" name='user_input_n_beds'>
+
+      </div>
+      <br> <br>
+      <div>
+         <button type="submit" class="btn btn-default btn-lg">Find listings with similar reviews!</button>
+       </div>
+
+
+     </form>
+   </div>
+
+   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+   <script src="static/js/bootstrap.min.js"></script>
+
+ </div> <!-- /.container-->
+
+
+  <!-- Bootstrap core JavaScript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+  </body>
+</html>
