@@ -8,7 +8,7 @@
   <meta name="author" content="">
   <link rel="icon" href="../../favicon.ico">
 
-  <title>TripSifter – intuitive search for Airbnb listings</title>
+  <title>Starter Template for Bootstrap</title>
 
   <!-- Bootstrap core CSS -->
   <link href="../static/css/bootstrap.min.css" rel="stylesheet">
@@ -32,7 +32,7 @@
 
 <body>
 
-  <!-- <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -49,69 +49,61 @@
           <li><a href="#about">About</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
-      </div><!--/.nav-collapse
+      </div><!--/.nav-collapse -->
     </div>
-  </div> -->
-
-
+  </div>
 <br><br>
-
   <div class="container">
-
    <div class="starter-template">
-       <h2>Describe your ideal Airbnb listing</h2>
-      
+       <h2>Output Page</h2>
+       <p>Enter some user input</p>
    </div>
 
    <div class = "container">
 
      <form action="/output" method="GET">
        <div class="form-group">
-          <label for="user_input">Enter your preferences: </label>
-          <textarea input type="text" class="form-control" rows="5" name="user_input" placeholder="e.g. A cute spot near the coolest coffee shops"></textarea>
+         <label for="user_input">What do you want in an Airbnb? </label>
+         <input type="text" id="user_input" name='user_input' placeholder="e.g. A cute spot near the coolest coffee shop ">
        </div>
-
-       
-
-      <br>
-      <!-- <h4>Additional Filters</h4> -->
-
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="additional_filters" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        </button>
-
-          <label for="user_input_room_type">Room type: </label> <br>
-          <input type="checkbox" name="user_input_room_type_entire" value="user_input_room_type_entire"> Entire Home / Apartment<br>
-          <input type="checkbox" name="user_input_room_type_private" value="user_input_room_type_private"> Private Room<br>
-          <input type="checkbox" name="user_input_room_type_shared" value="user_input_room_type_shared"> Shared Room<br>
-          <br>
-
-     
-          <label for="price_range">Price Range: </label> <br>
-          <label for="user_input_min_price">Minimum:</label> 
-          <input type="number" id="user_input_min_price" name='user_input_min_price'>
-          <label for="user_input_max_price">Maximum:</label> 
-          <input type="number" id="user_input_max_price" name='user_input_max_price'>
-          <br><br>
-
-          <label for="n_beds">Number of Beds: </label> 
-          <input type="number" id="user_input_n_beds" name='user_input_n_beds'>
-      </div>
-    </div>
-    <br> <br>
-
-    <div>
-       <button type="submit" class="btn btn-default btn-lg">Find listings with similar reviews!</button>
-     </div>
-
-
+       <div>
+         <button type="submit" class="btn btn-default btn-lg">Find listings with similar reviews!</button>
+       </div>
      </form>
    </div>
-
    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
    <script src="static/js/bootstrap.min.js"></script>
 
  </div> <!-- /.container-->
+
+   <div class="container">
+     <div class="starter-template">
+       <h3>Results:</h3>
+       <p class="lead">Below is the result of your query.<br> You just took user input and looked up the information. Now we need to expand the functionality!</p>
+     </div>
+
+     <table class="table table-hover">
+     <tr><th>index</th><th>Attendant</th><th>Birth Month</th></tr>
+     {% for birth in births %}
+     <tr><td>{{ birth['index'] }}</td><td>{{ birth['attendant']}}</td><td> {{ birth['birth_month'] }}</td></tr>
+     {% endfor %}
+     </table>
+
+
+    </div><!-- /.container -->
+
+   <div class="container">
+     <div class="starter-template">
+       <h3>Another Result:</h3>
+       <p class="lead">Now we've taken the input and called a function from your package.<br>The result is {{the_result}}</p>
+     </div>
+
+
+     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+     <script src="static/js/bootstrap.min.js"></script>
+
+
+    </div><!-- /.container -->
 
 
   <!-- Bootstrap core JavaScript

@@ -14,14 +14,20 @@ from nltk.stem import WordNetLemmatizer, SnowballStemmer
 import sklearn as sk
 import numpy as np
 
-def Calculate_similarities(fromUser='Default', listings = None, dictionary=None, model = None):
+def _Elementwise_cosine_similarity(arr, ctv):
+    return sk.metrics.pairwise.cosine_similarity(np.array(ctv).reshape(1, -1), arr)
+
+def Calculate_similarities(fromUser='Default', listings = None, dictionary=None, model = None, elementwise = False):
 
 	# preprocess this text, get the topic vector
 	comment_stem_lemma = Preprocess_text(fromUser)
 	comment_bow = dictionary.doc2bow(comment_stem_lemma)
 	comment_topic_vector = [tup[1] for tup in model[comment_bow]]
 
-	sims = sk.metrics.pairwise.cosine_similarity(np.array(comment_topic_vector).reshape(1, -1), np.vstack(listings))[0]
+	if elementwise:
+		sims = listings.apply(lambda x: _Elementwise_cosine_similarity(x, comment_topic_vector))
+	else:
+		sims = sk.metrics.pairwise.cosine_similarity(np.array(comment_topic_vector).reshape(1, -1), np.vstack(listings))[0]
 
 	if fromUser != 'Default':
 		return sims

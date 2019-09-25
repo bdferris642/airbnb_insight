@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 room_df = pd.read_json('/Users/bennett/Documents/Flask/Airbnb/MVP/clean_scored_room_db.json', orient='columns')
-room_df = room_df.dropna(subset = ['room_id', 'mean_topic_score', 'topic_scores']) 
+room_df = room_df.dropna(subset = ['room_id', 'mean_topic_score', 'topic_scores'])
 
 with open('/Users/bennett/Documents/Flask/Airbnb/MVP/lda_10_less05_great1000.pkl', 'rb') as fp:
     lda_dict = pickle.load(fp)
@@ -30,8 +30,16 @@ def index():
       )
 
 @app.route('/input')
-def cesareans_input():
+def airbnb_comments_input():
    return render_template("input.html")
+
+@app.route('/input2')
+def test_bootstrap_input():
+   return render_template("input2.html")
+
+@app.route('/jumbotron')
+def jjjjumbotron():
+   return render_template("jumbotron.html")
 
 @app.route('/output')
 def listings_output():
@@ -51,28 +59,28 @@ def listings_output():
         render_template("input.html", error_message = 'Enter numerals in numerical categories')
 
   user_input_min_price, user_input_max_price, user_input_n_beds = numerical_user_inputs
-
-      
-
-
-
   user_input_entire_checked = request.args.get("user_input_room_type_entire") != None
   user_input_private_checked = request.args.get("user_input_room_type_private") != None
   user_input_shared_checked = request.args.get("user_input_room_type_shared") != None
   room_type_checks = np.array([user_input_entire_checked, user_input_private_checked, user_input_shared_checked])
   room_types = np.array(['Entire home/apt', 'Private room', 'Shared room']) 
 
-  print(user_input_entire_checked, user_input_private_checked, user_input_shared_checked)
-  print(user_input_min_price, user_input_max_price)
-  print(user_input_n_beds)
-
-  # get the list of cosine similarities. Sort by them. Render Template with the Top 3
 
   room_df['similarity'] = Calculate_similarities(fromUser=user_input,
                                                   listings = room_df.mean_topic_score, 
                                                   dictionary = dictionary,
-                                                  model = model)
+                                                  model = model,
+                                                  elementwise = False)
+  room_df['elementwise_similarity'] = Calculate_similarities(fromUser=user_input,
+                                                  listings = room_df.topic_scores, 
+                                                  dictionary = dictionary,
+                                                  model = model,
+                                                  elementwise = True)
+
+
+
   sorted_room_df = room_df.sort_values(by = 'similarity', ascending = False)
+  sorted_room_df[sorted_room_df.comments.apply(lambda x: len(x) >= 10)] # for now only suggest listings with 10+ reviews
 
   if np.any(room_type_checks):
     sorted_room_df = sorted_room_df.dropna(subset=['room_type'])
@@ -90,7 +98,18 @@ def listings_output():
     sorted_room_df = sorted_room_df.dropna(subset=['beds'])
     sorted_room_df = sorted_room_df[sorted_room_df.beds == user_input_n_beds]
 
-  the_result = sorted_room_df[sorted_room_df.comments.apply(lambda x: len(x) >= 10)][['similarity']].iloc[:3]
+  # get the list of cosine similarities. Sort by them. Render Template with the Top 3
+  trimmed_sorted_room_df = sorted_room_df.iloc[:3]
+  # OJO OJO OJO fix this 
+  # Right now the top comment is picked AT RANDOM!!!!
+  trimmed_sorted_room_df['most_similar_screened_comment'] = trimmed_sorted_room_df.apply(lambda x: x.comments_screened[np.random.randint(low=0,
+                                                                                                                       high=len(x.comments_screened))],
+                                                                                                                                                axis=1)
+
+  the_result={}
+  for i in range(np.shape(trimmed_sorted_room_df)[0]):
+    the_result[i] = trimmed_sorted_room_df.iloc[i]
+
   return render_template("output.html", the_result = the_result)
 
 
