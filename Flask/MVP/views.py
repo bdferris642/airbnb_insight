@@ -8,12 +8,18 @@ from flask import request
 from MVP.a_Model import Calculate_similarities, Preprocess_text
 import pickle
 import numpy as np
+from gensim.models import KeyedVectors
 
-room_df = pd.read_json('/Users/bennett/Documents/Flask/Airbnb/MVP/clean_scored_room_db.json', orient='columns')
+#nlp = KeyedVectors.load_word2vec_format('/Users/bennett/Documents/Flask/Airbnb/MVP/GoogleNews-vectors-negative300.bin', binary=True)
+with open('/Users/bennett/Documents/Flask/Airbnb/MVP/new_clean_scored_room_db.pkl', 'rb') as fp:
+    room_df = pickle.load(fp)
+
+#room_df = pd.read_json('/Users/bennett/Documents/Flask/Airbnb/MVP/new_clean_scored_room_db.json', orient='columns')
 room_df = room_df.dropna(subset = ['room_id', 'mean_topic_score', 'topic_scores'])
 
-with open('/Users/bennett/Documents/Flask/Airbnb/MVP/lda_10_less05_great1000.pkl', 'rb') as fp:
+with open('/Users/bennett/Documents/Flask/Airbnb/MVP/lda_10_less05_great1000_NEW.pkl', 'rb') as fp:
     lda_dict = pickle.load(fp)
+
 model = lda_dict['model']
 topics = lda_dict['topics']
 corpus = lda_dict['corpus']
@@ -72,11 +78,10 @@ def listings_output():
                                                   model = model,
                                                   elementwise = False)
   room_df['elementwise_similarity'] = Calculate_similarities(fromUser=user_input,
-                                                  listings = room_df.topic_scores, 
-                                                  dictionary = dictionary,
-                                                  model = model,
-                                                  elementwise = True)
-
+                                                   listings = room_df.topic_scores, 
+                                                   dictionary = dictionary,
+                                                   model = model,
+                                                   elementwise = True)
 
 
   sorted_room_df = room_df.sort_values(by = 'similarity', ascending = False)
@@ -100,11 +105,16 @@ def listings_output():
 
   # get the list of cosine similarities. Sort by them. Render Template with the Top 3
   trimmed_sorted_room_df = sorted_room_df.iloc[:3]
+
   # OJO OJO OJO fix this 
   # Right now the top comment is picked AT RANDOM!!!!
-  trimmed_sorted_room_df['most_similar_screened_comment'] = trimmed_sorted_room_df.apply(lambda x: x.comments_screened[np.random.randint(low=0,
-                                                                                                                       high=len(x.comments_screened))],
-                                                                                                                                                axis=1)
+  #trimmed_sorted_room_df['most_similar_screened_comment'] = trimmed_sorted_room_df.apply(lambda x: x.comments_screened[np.random.randint(low=0,
+  #                                                                                                                     high=len(x.comments_screened))],
+  #                                                                                                                                              axis=1)
+  trimmed_sorted_room_df['most_similar_screened_comment'] = ['' for i in range(np.shape(trimmed_sorted_room_df)[0])]
+  for i in range(np.shape(trimmed_sorted_room_df)[0]):
+    ind_most_similar = np.where(trimmed_sorted_room_df.elementwise_similarity.iloc[i] == np.max(trimmed_sorted_room_df.elementwise_similarity.iloc[i]))[0][0]
+    trimmed_sorted_room_df['most_similar_screened_comment'].iloc[i] = trimmed_sorted_room_df.comments_screened.iloc[i][ind_most_similar]
 
   the_result={}
   for i in range(np.shape(trimmed_sorted_room_df)[0]):

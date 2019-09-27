@@ -37,13 +37,13 @@ def Calculate_similarities(fromUser='Default', listings = None, dictionary=None,
 	comment_topic_vector = [tup[1] for tup in model[comment_bow]]
 
 	#comment_embedded_vector = langmod(fromUser).vector
-	#comment_embedded_vector = _Model_sentence(fromUser, langmod)
-	#topic_x_embedded_vector = np.ravel(np.outer(comment_topic_vector, comment_embedded_vector))
+	comment_embedded_vector = _Model_sentence(fromUser, langmod)
+	topic_x_embedded_vector = np.ravel(np.outer(comment_topic_vector, comment_embedded_vector))
 
 	if elementwise:
-		sims = listings.apply(lambda x: _Elementwise_cosine_similarity(x, comment_topic_vector))
+		sims = listings.apply(lambda x: _Elementwise_cosine_similarity(x, topic_x_embedded_vector))
 	else:
-		sims = sk.metrics.pairwise.cosine_similarity(np.array(comment_topic_vector).reshape(1, -1), np.vstack(listings))[0]
+		sims = sk.metrics.pairwise.cosine_similarity(np.array(topic_x_embedded_vector).reshape(1, -1), np.vstack(listings))[0]
 
 	if fromUser != 'Default':
 		return sims
@@ -60,5 +60,3 @@ def Preprocess_text(text):
 stemmer = SnowballStemmer("english")
 def lemmatize_stemming(text):
 	return stemmer.stem(WordNetLemmatizer().lemmatize(text, pos='v'))
-
-	
