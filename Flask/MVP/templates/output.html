@@ -11,7 +11,7 @@
     <link rel="icon" href="../../favicon.ico">
     <link rel="canonical" href="https://getbootstrap.com/docs/3.3/examples/jumbotron/">
 
-    <title>YourBnb's Personalized Suggestions</title>
+    <title></title>
 
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
@@ -68,9 +68,16 @@
 
     <div class="jumbotron">
       <div class="container">
-        <h1 style="text-align:center;" >YourBnB</h1>
+        <h2 style="text-align:center;" >YourBnB</h2>
         <p style="text-align:center;" >Mining AirBnB Reviews to Deliver Personalized Recommendations </p>
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+        <br>
+        <p> You said: </p>
+          <br>
+        <p> <i>"{{ input_text }}"</i> </p>
+        <p>Your input's topic score:
+        <br>
+        {{comment_topic_vector}} </p>
+        <!-- <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p> -->
       </div>
     </div>
 

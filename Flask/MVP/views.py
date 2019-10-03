@@ -9,17 +9,16 @@ from MVP.a_Model import Calculate_similarities, Preprocess_text
 import pickle
 import numpy as np
 from gensim.models import KeyedVectors
+import copy as cp
 
 #nlp = KeyedVectors.load_word2vec_format('/Users/bennett/Documents/Flask/Airbnb/MVP/GoogleNews-vectors-negative300.bin', binary=True)
 with open('/Users/bennett/Documents/Flask/Airbnb/MVP/csrdb.pkl', 'rb') as fp:
-    room_df = pickle.load(fp)
+    room_df_orig = pickle.load(fp)
 
-
-
-room_df = room_df[room_df.comments_screened.apply(lambda x: len(x) >= 10)]
+room_df_orig = room_df_orig[room_df_orig.comments_screened.apply(lambda x: len(x) >= 10)]
 
 #room_df = pd.read_json('/Users/bennett/Documents/Flask/Airbnb/MVP/new_clean_scored_room_db.json', orient='columns')
-room_df = room_df.dropna(subset = ['room_id', 'mean_topic_score', 'topic_scores'])
+room_df_orig = room_df_orig.dropna(subset = ['room_id', 'mean_topic_score', 'topic_scores'])
 
 with open('/Users/bennett/Documents/Flask/Airbnb/MVP/lda08_st10_sb1000_dict_NEW.pkl', 'rb') as fp:
     lda_dict = pickle.load(fp)
@@ -48,26 +47,10 @@ def index():
 def airbnb_comments_input():
    return render_template("input.html", img_url = img_urls[np.random.randint(low=0, high=len(img_urls))])
 
-@app.route('/input2')
-def test_bootstrap_input():
-   return render_template("input2.html")
-
-@app.route('/mapdemo')
-def test_map():
-   return render_template("mapdemo.html")
-
-@app.route('/jumbotron')
-def jjjjumbotron():
-   return render_template("jumbotron.html")
-
-@app.route('/output2')
-def listings_output2():
-  return render_template("output2.html", the_result = room_df)
-
 @app.route('/output')
 def listings_output():
-  global room_df 
-  print(np.shape(room_df))
+  global room_df_orig
+  room_df = cp.deepcopy(room_df_orig)
   
   user_input = request.args.get('user_input')
 
@@ -121,12 +104,12 @@ def listings_output():
     room_df = room_df.dropna(subset = ['review_scores_rating'])
     room_df = room_df[room_df.review_scores_rating >= user_input_min_rating]
 
-  room_df['similarity'] = Calculate_similarities(fromUser=user_input,
+  room_df['similarity'], comment_topic_vector = Calculate_similarities(fromUser=user_input,
                                                   listings = room_df.mean_topic_score, 
                                                   dictionary = dictionary,
                                                   model = model,
                                                   elementwise = False)
-  room_df['elementwise_similarity'] = Calculate_similarities(fromUser=user_input,
+  room_df['elementwise_similarity'], comment_topic_vector = Calculate_similarities(fromUser=user_input,
                                                    listings = room_df.topic_scores, 
                                                    dictionary = dictionary,
                                                    model = model,
@@ -146,6 +129,9 @@ def listings_output():
   for i in range(np.shape(trimmed_sorted_room_df)[0]):
     the_result[i] = trimmed_sorted_room_df.iloc[i]
 
-  return render_template("output.html", the_result = the_result)
+  return render_template("output.html",
+                        input_text = user_input,
+                        comment_topic_vector= [round(i, 2) for i in comment_topic_vector],
+                        the_result = the_result)
 
 

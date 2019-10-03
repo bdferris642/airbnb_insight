@@ -46,7 +46,7 @@ def Calculate_similarities(fromUser='Default', listings = None, dictionary=None,
 		sims = sk.metrics.pairwise.cosine_similarity(np.array(comment_topic_vector).reshape(1, -1), np.vstack(listings))[0]
 
 	if fromUser != 'Default':
-		return sims
+		return sims, comment_topic_vector
 	else:
 		return 'check your input' 
 
