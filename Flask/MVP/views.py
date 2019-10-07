@@ -141,7 +141,7 @@ def listings_output():
   maplink+= str(trimmed_sorted_room_df.iloc[2].latitude)
   maplink+= ","
   maplink+= str(trimmed_sorted_room_df.iloc[2].longitude)
-  maplink+= "&key=AIzaSyDTQObkJZDeUeyHCjmC_iMIlgbEWjiuD-A"
+  maplink+= "&key=MY_API_KEY"
 
   return render_template("output.html",
                         maplink = maplink,
