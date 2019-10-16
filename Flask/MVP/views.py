@@ -1,9 +1,23 @@
+"""
+The yourbnb.xyz web app
+Using NLP to rank airbnb listings in NYC on the basis of user input 
+
+Preloads the a pickle of a pandas dataframe `room_df_orig` representing the listings
+and a pickle of a dictionary with keys 'model' (a gensim LDA model trained on the listings' reviews)
+and 'dictionary', a list-of-str--> list-of-tuple (id, occurrences) dictionary to convert strings to a bag-of-words format
+
+On the 'Input' app route, the app collects `user_input`, unstructured data (a string of text representing the user's preferences)
+Other inputs are used to filter which rows of room_df_orig to consider. 
+These are user_input_min_price, user_input_max_price, user_input_n_beds, user_input_min_rating,
+And checkbox input user_input_entire_checked, user_input_private_checked, user_input_shared_checked
+"""
+
 from flask import render_template
 from MVP import app
 import pandas as pd
 import psycopg2
 from flask import request
-from MVP.a_Model import Calculate_similarities, Preprocess_text
+from MVP.a_Model import Calculate_similarities
 import pickle
 import numpy as np
 from gensim.models import KeyedVectors
@@ -14,21 +28,24 @@ import copy as cp
 
 # dataframe of listings with at least 10 valid comments inenglish, with at least 10 words)
 # and their associated data (incl comments, topic vectors, price, beds, room type, latitude, longitude)
-with open('/home/ubuntu/Airbnb/MVP/csrdb_ge10_slim.pkl', 'rb') as fp:
+# Alter path needed!
+with open('/Users/bennett/Documents/GitHub/airbnb_insight_repo/airbnb_insight/Flask/MVP/csrdb_ge10_slim.pkl', 'rb') as fp:
     room_df_orig = pickle.load(fp)
 
 room_df_orig = room_df_orig.dropna(subset = ['room_id', 'mean_topic_score', 'topic_scores'])
 
 # Load the gensim model from a pickle
-with open('/home/ubuntu/Airbnb/MVP/lda08_st10_sb1000_dict_NEW.pkl', 'rb') as fp:
+# Alter path needed!
+with open('/Users/bennett/Documents/GitHub/airbnb_insight_repo/airbnb_insight/Flask/MVP/lda08_st10_sb1000_dict_NEW.pkl', 'rb') as fp:
     lda_dict = pickle.load(fp)
 
 model = lda_dict['model']
-topics = lda_dict['topics']
-corpus = lda_dict['corpus']
+#topics = lda_dict['topics']
+#corpus = lda_dict['corpus']
 dictionary = lda_dict['dictionary']
 
-# Links to beauuuutiful NYC images. Alas, deprecated, b/c it was hard to read the text.
+# Links to NYC images for input page. As yet unsued, b/c it was hard to read the text.
+# render_template("input.html", img_url = img_urls[np.random.randint(low=0, high=len(img_urls))])
 img_urls = ["http://cdn.cnn.com/cnnnext/dam/assets/171215133931-01-super-slender-skyscrapers-new-york-restricted.jpg",
           "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/aerial-view-of-lower-manhattan-nyc-high-res-stock-photography-1567771485.jpg",
           "https://wallpaperbro.com/img/534226.jpg",
@@ -38,7 +55,7 @@ img_urls = ["http://cdn.cnn.com/cnnnext/dam/assets/171215133931-01-super-slender
 @app.route('/index')
 @app.route('/input')
 def airbnb_comments_input():
-   return render_template("input.html", img_url = img_urls[np.random.randint(low=0, high=len(img_urls))])
+   return render_template("input.html")
 
 @app.route('/output')
 def listings_output():
@@ -118,6 +135,7 @@ def listings_output():
   trimmed_sorted_room_df = sorted_room_df.iloc[:3]
   trimmed_sorted_room_df['most_similar_screened_comment'] = ['' for i in range(np.shape(trimmed_sorted_room_df)[0])]
 
+  # In each of the top 3 listings, get the comment that is the most similar to the user's input
   for i in range(np.shape(trimmed_sorted_room_df)[0]):
     ind_most_similar = np.where(trimmed_sorted_room_df.elementwise_similarity.iloc[i] == np.max(trimmed_sorted_room_df.elementwise_similarity.iloc[i]))[0][0]
     trimmed_sorted_room_df['most_similar_screened_comment'].iloc[i] = trimmed_sorted_room_df.comments_screened.iloc[i][ind_most_similar]
@@ -141,10 +159,14 @@ def listings_output():
   maplink+= str(trimmed_sorted_room_df.iloc[2].latitude)
   maplink+= ","
   maplink+= str(trimmed_sorted_room_df.iloc[2].longitude)
+
+  # Google API key blanked out for security
   maplink+= "&key=MY_API_KEY"
 
+  # render the output page
   return render_template("output.html",
                         maplink = maplink,
                         input_text = user_input,
                         comment_topic_vector= [round(i, 2) for i in comment_topic_vector],
                         the_result = the_result)
+
